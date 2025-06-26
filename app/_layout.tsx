@@ -1,29 +1,48 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import React, { useEffect } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AuthProvider, useAuth } from '../app/contexts/AuthContext';
+import './global.css';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+function RootLayoutNav() {
+  const { session } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  useEffect(() => {
+    const inAuthGroup = segments[0] === '(tabs)';
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
+    if (!session && inAuthGroup) {
+      // Redirect to sign-in if not authenticated and trying to access protected routes
+      router.replace('/sign-in');
+    } else if (session && !inAuthGroup) {
+      // Redirect to main app if authenticated and on sign-in page
+      router.replace('/(tabs)');
+    }
+  }, [session, segments]);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Stack>
+      <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <>
+      <AuthProvider>
+        <SafeAreaProvider>
+          <StatusBar
+            style={'dark'}
+            translucent={true}
+            backgroundColor={'#121824'}
+          />
+          <RootLayoutNav />
+        </SafeAreaProvider>
+      </AuthProvider>
+    </>
   );
 }
