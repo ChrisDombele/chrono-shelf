@@ -1,5 +1,5 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
+import { ChartLine, Clock, ClockPlus, Settings2 } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -9,8 +9,9 @@ export default function TabLayout() {
         options={{
           title: 'Watches',
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="home" color={color} />
+            <Clock size={28} color={color} strokeWidth={1.5} />
           ),
+          headerShown: false,
         }}
       />
       <Tabs.Screen
@@ -18,17 +19,29 @@ export default function TabLayout() {
         options={{
           title: 'Stats',
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="bar-chart" color={color} />
+            <ChartLine size={28} color={color} strokeWidth={1.5} />
           ),
+          headerShown: false,
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="addWatch"
+        options={{
+          title: 'Add Watch',
+          tabBarIcon: ({ color }) => (
+            <ClockPlus size={28} color={color} strokeWidth={1.5} />
+          ),
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="settingsPage"
         options={{
           title: 'Settings',
           tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="cog" color={color} />
+            <Settings2 size={28} color={color} strokeWidth={1.5} />
           ),
+          headerShown: false,
         }}
       />
     </Tabs>

@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Auth from '../components/Auth';
 
-export default function SignIn() {
+export default function Index() {
   return (
     <View style={styles.container}>
       <Auth />

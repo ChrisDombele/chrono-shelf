@@ -1,9 +1,17 @@
-import { Text, View } from 'react-native';
+import { useFetchWatchData, useWatchFilters } from '@/hooks/fetchWatchData';
+import { Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function Index() {
+export default function Stats() {
+  const { watches } = useFetchWatchData();
+  const { getTotalValue, acquiredCount } = useWatchFilters(watches);
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-bold text-blue-500">Stats Page</Text>
-    </View>
+    <SafeAreaView className="flex-1">
+      <Image
+        source={require('@/assets/images/watch.png')}
+        className="w-20 h-20 rounded-xl"
+        resizeMode="cover"
+      />
+    </SafeAreaView>
   );
 }

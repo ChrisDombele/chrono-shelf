@@ -1,39 +1,40 @@
+import { useAuth } from '@/contexts/AuthContext';
 import React, { useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Button, Input } from 'react-native-elements';
-import { supabase } from '../app/lib/supabase';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
+  const { signIn, signUp, loading } = useAuth();
 
-  async function signInWithEmail() {
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
+  // async function signInWithEmail() {
+  //   setLoading(true);
+  //   const { error } = await supabase.auth.signInWithPassword({
+  //     email: email,
+  //     password: password,
+  //   });
 
-    if (error) Alert.alert(error.message);
-    setLoading(false);
-  }
+  //   if (error) Alert.alert(error.message);
+  //   setLoading(false);
+  // }
 
-  async function signUpWithEmail() {
-    setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
+  // async function signUpWithEmail() {
+  //   setLoading(true);
+  //   const {
+  //     data: { session },
+  //     error,
+  //   } = await supabase.auth.signUp({
+  //     email: email,
+  //     password: password,
+  //   });
 
-    if (error) Alert.alert(error.message);
-    if (!session)
-      Alert.alert('Please check your inbox for email verification!');
-    setLoading(false);
-  }
+  //   if (error) Alert.alert(error.message);
+  //   if (!session)
+  //     Alert.alert('Please check your inbox for email verification!');
+  //   setLoading(false);
+  // }
 
   return (
     <View style={styles.container}>
@@ -61,15 +62,15 @@ export default function Auth() {
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Button
           title="Sign in"
-          disabled={loading}
-          onPress={() => signInWithEmail()}
+          disabled={loading} // causes button to appear pressed. Is just disabled
+          onPress={() => signIn(email, password)}
         />
       </View>
       <View style={styles.verticallySpaced}>
         <Button
           title="Sign up"
-          disabled={loading}
-          onPress={() => signUpWithEmail()}
+          disabled={loading} // causes button to appear pressed. Is just disabled
+          onPress={() => signUp(email, password)}
         />
       </View>
     </View>
