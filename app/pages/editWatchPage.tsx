@@ -2,7 +2,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useFetchWatchData, WatchWithBrand } from '@/hooks/fetchWatchData';
 import { useWatchImages } from '@/hooks/useWatchImages';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { ArrowLeft, Check, X } from 'lucide-react-native';
+import { ArrowLeft, X } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
@@ -16,12 +16,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
+import { saveWatch } from '../utils/watchOperations';
 
 export default function EditWatchPage() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const { user } = useAuth();
-  const { watches, updateWatch, addBrand, updateBrand } = useFetchWatchData();
+  const { watches, updateWatch, addWatch, addBrand, updateBrand } = useFetchWatchData();
   const { uploadImage, pickImage, takePhoto, deleteImage, uploading } =
     useWatchImages();
 
@@ -191,163 +192,40 @@ export default function EditWatchPage() {
 
   // Handle save
   const handleSave = async () => {
-    if (!watch) return;
-    if (!user) {
-      Alert.alert('Error', 'User not authenticated');
-      return;
-    }
-
-    // Validate required fields
-    if (
-      !formData.brand.trim() ||
-      !formData.model.trim() ||
-      !formData.price.trim()
-    ) {
-      Alert.alert('Error', 'Please fill in all required fields');
-      return;
-    }
-
-    // Validate price
-    const price = parseFloat(formData.price);
-    if (isNaN(price) || price <= 0) {
-      Alert.alert('Error', 'Please enter a valid price');
-      return;
-    }
+    if (!watch || !user) return;
 
     setSaving(true);
 
     try {
-      let brandId = watch.brand_id;
-      const newBrandName = formData.brand.trim();
-
-      // Check if brand name has changed
-      if (watch.brand?.brand_name !== newBrandName) {
-        // Try to find existing brand with the new name
-        const existingBrand = watches.find(
-          (w) => w.brand?.brand_name === newBrandName
-        )?.brand;
-
-        if (existingBrand) {
-          // Use existing brand
-          brandId = existingBrand.id;
-        } else {
-          // Create new brand
-          const brandResult = await addBrand(newBrandName);
-          if (brandResult.success && brandResult.data) {
-            brandId = brandResult.data.id;
-          } else {
-            throw new Error(brandResult.error || 'Failed to create brand');
-          }
-        }
-      }
-
-      // Update watch data with new brand_id
-      const updateResult = await updateWatch(watch.id, {
-        line: formData.model.trim(),
-        price: price,
-        reference: formData.reference.trim(),
-        link: formData.link.trim(),
-        acquired: formData.acquired,
-        brand_id: brandId,
+      await saveWatch({
+        watch,
+        formData: {
+          brand: formData.brand,
+          model: formData.model,
+          price: formData.price,
+          reference: formData.reference,
+          link: formData.link,
+          acquired: formData.acquired,
+        },
+        user,
+        watches,
+        newImageFile,
+        currentImage,
+        imageRemoved,
+        addBrand,
+        updateWatch,
+        uploadImage,
+        deleteImage,
+        onSuccess: () => {
+          setImageRemoved(false);
+          router.back();
+        },
+        onError: (error) => {
+          console.error('Failed to save watch:', error);
+        },
       });
-
-      if (!updateResult.success) {
-        throw new Error(updateResult.error || 'Failed to update watch');
-      }
-
-      // Handle image operations
-
-      if (newImageFile) {
-        // Upload new image
-        try {
-          const imageResult = await uploadImage(
-            //ERROR HERE
-            watch.id,
-            newImageFile as string
-          );
-          if (!imageResult.success) {
-            Alert.alert(
-              'Image Upload Warning',
-              `Watch updated but image upload failed: ${imageResult.error}. You can try uploading the image again later.`,
-              [{ text: 'OK' }]
-            );
-          } else {
-            // Update the watch with the new image URL
-            const imageUpdateResult = await updateWatch(watch.id, {
-              image_url: imageResult.data?.url,
-            });
-            if (!imageUpdateResult.success) {
-              // Failed to update watch with image URL
-            } else {
-              // Reset the image removed flag since we now have a new image
-              setImageRemoved(false);
-            }
-          }
-        } catch (uploadError) {
-          Alert.alert(
-            'Image Upload Error',
-            `Watch updated but image upload failed: ${uploadError instanceof Error ? uploadError.message : 'Unknown error'}. You can try uploading the image again later.`,
-            [{ text: 'OK' }]
-          );
-        }
-      } else if ((currentImage && !newImageFile) || imageRemoved) {
-        // Remove existing image (user clicked remove button)
-        try {
-          // Delete from storage first
-          if (currentImage && currentImage.startsWith('data:')) {
-            // If currentImage is a data URL, we need to get the original file path from the watch
-            if (watch.image_url) {
-              const urlParts = watch.image_url.split('/');
-
-              // Find the index of 'watch-images' in the URL
-              const bucketIndex = urlParts.findIndex(
-                (part) => part === 'watch-images'
-              );
-              if (bucketIndex !== -1) {
-                // Extract the path after 'watch-images'
-                const pathAfterBucket = urlParts.slice(bucketIndex + 1);
-                if (pathAfterBucket.length >= 3) {
-                  const [userId, watchId, fileName] = pathAfterBucket;
-                  const filePath = `${userId}/${watchId}/${fileName}`;
-
-                  const deleteResult = await deleteImage(filePath);
-                  if (!deleteResult.success) {
-                    // Failed to delete image from storage
-                  } else {
-                    // Image deleted from storage successfully
-                  }
-                }
-              }
-            }
-          }
-
-          // Update watch record to remove image reference
-          const imageUpdateResult = await updateWatch(watch.id, {
-            image_url: null,
-          });
-          if (!imageUpdateResult.success) {
-            // Failed to update watch with null image URL
-          } else {
-            // Reset the image removed flag
-            setImageRemoved(false);
-          }
-        } catch (removeError) {
-          Alert.alert(
-            'Image Removal Error',
-            `Watch updated but image removal failed: ${removeError instanceof Error ? removeError.message : 'Unknown error'}. You can try removing the image again later.`,
-            [{ text: 'OK' }]
-          );
-        }
-      }
-
-      Alert.alert('Success', 'Watch updated successfully', [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
     } catch (error) {
-      Alert.alert(
-        'Error',
-        error instanceof Error ? error.message : 'Failed to update watch'
-      );
+      console.error('Error in handleSave:', error);
     } finally {
       setSaving(false);
     }
@@ -567,7 +445,6 @@ export default function EditWatchPage() {
           onPress={handleSave}
           disabled={saving}
         >
-          <Check size={20} color="white" />
           <Text className="text-white font-semibold ml-2">
             {saving ? 'Updating...' : 'Update'}
           </Text>
