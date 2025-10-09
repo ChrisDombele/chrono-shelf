@@ -64,7 +64,6 @@ export default function App() {
             <Spacer size="xs" />
           </>
         )}
-        estimatedItemSize={80}
         showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
