@@ -1,7 +1,7 @@
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import './global.css';
 
@@ -28,14 +28,16 @@ export default function RootLayout() {
   return (
     <>
       <SafeAreaProvider>
-        <AuthProvider>
-          <StatusBar
-            style={'dark'}
-            translucent={true}
-            backgroundColor={'#121824'}
-          />
-          <RootLayoutNav />
-        </AuthProvider>
+        <KeyboardProvider>
+          <AuthProvider>
+            <StatusBar
+              style={'dark'}
+              translucent={true}
+              backgroundColor={'#121824'}
+            />
+            <RootLayoutNav />
+          </AuthProvider>
+        </KeyboardProvider>
       </SafeAreaProvider>
     </>
   );

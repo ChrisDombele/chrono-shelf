@@ -1,9 +1,9 @@
 import { supabase } from '@/app/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+
 import * as ImagePicker from 'expo-image-picker';
 import { useCallback, useState } from 'react';
 import { Platform } from 'react-native';
-
 export interface UploadImageResult {
   success: boolean;
   data?: { url: string };

@@ -3,17 +3,17 @@ import { useFetchWatchData } from '@/hooks/fetchWatchData';
 import { useWatchImages } from '@/hooks/useWatchImages';
 import { router } from 'expo-router';
 import { Upload } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   Image,
-  ScrollView,
   Switch,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { saveWatch } from '../utils/watchOperations';
 
@@ -122,7 +122,8 @@ const AddWatchPage = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 px-4">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <KeyboardAwareScrollView bottomOffset={16} className="flex-1">
+        {/* <ScrollView className="flex-1" showsVerticalScrollIndicator={false}> */}
         {/* Watch Image */}
         <View className="my-6">
           <TouchableOpacity
@@ -264,7 +265,8 @@ const AddWatchPage = () => {
             </Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
+        {/* </ScrollView> */}
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 };
