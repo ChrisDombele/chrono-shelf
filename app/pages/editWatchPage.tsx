@@ -2,18 +2,18 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useFetchWatchData, WatchWithBrand } from '@/hooks/fetchWatchData';
 import { useWatchImages } from '@/hooks/useWatchImages';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { ArrowLeft, X } from 'lucide-react-native';
+import { ArrowLeft, Upload, X } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Image,
-  ScrollView,
   Switch,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
 import { saveWatch } from '../utils/watchOperations';
@@ -22,7 +22,8 @@ export default function EditWatchPage() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const { user } = useAuth();
-  const { watches, updateWatch, addWatch, addBrand, updateBrand } = useFetchWatchData();
+  const { watches, updateWatch, addWatch, addBrand, updateBrand } =
+    useFetchWatchData();
   const { uploadImage, pickImage, takePhoto, deleteImage, uploading } =
     useWatchImages();
 
@@ -273,7 +274,11 @@ export default function EditWatchPage() {
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <KeyboardAwareScrollView
+        className="flex-1"
+        bottomOffset={16}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         <View className="flex-row items-center p-4 border-b border-gray-200">
           <TouchableOpacity
@@ -288,69 +293,47 @@ export default function EditWatchPage() {
           </View>
         </View>
 
-        {/* Watch Image Section */}
-        <View className="p-4">
-          <View>
-            <Text className="text-gray-700 font-medium mb-3">Watch Image</Text>
+        {/* Contianer */}
+        <View className="px-4">
+          {/* Watch Image Section */}
+          <View className="pb-4">
+            <TouchableOpacity
+              onPress={handlePickImage}
+              disabled={uploading}
+              className="w-full h-48 bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 items-center justify-center"
+            >
+              {currentImage || newImageFile ? (
+                <Image
+                  source={{ uri: newImageFile || currentImage || '' }}
+                  className="w-full h-full rounded-xl"
+                  resizeMode="cover"
+                />
+              ) : (
+                <View className="items-center">
+                  <Upload size={28} color="#9CA3AF" className="mb-2" />
+                  <Text className="text-blue-600 font-medium">Add Photo</Text>
+                </View>
+              )}
 
-            <View className="relative">
-              <View className="w-full h-48 bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 items-center justify-center">
-                {currentImage || newImageFile ? (
-                  <Image
-                    source={{ uri: newImageFile || currentImage || '' }}
-                    className="w-full h-full rounded-xl"
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <View className="items-center">
-                    <Text className="text-gray-400 text-lg mb-2">
-                      Watch preview
-                    </Text>
-                    <View className="w-12 h-12 bg-gray-200 rounded-full items-center justify-center">
-                      <Text className="text-gray-400 text-2xl">📷</Text>
-                    </View>
-                  </View>
-                )}
-
-                {/* Remove Image Button */}
-                {(currentImage || newImageFile) && (
-                  <TouchableOpacity
-                    className="absolute top-2 right-2 w-8 h-8 bg-red-500 rounded-full items-center justify-center"
-                    onPress={handleRemoveImage}
-                  >
-                    <X size={16} color="white" />
-                  </TouchableOpacity>
-                )}
-              </View>
-
-              {/* Image Action Buttons */}
-              <View className="flex-row mt-3 space-x-3">
+              {/* Remove Image Button */}
+              {(currentImage || newImageFile) && (
                 <TouchableOpacity
-                  className="flex-1 bg-blue-500 py-3 rounded-xl items-center"
-                  onPress={handlePickImage}
-                  disabled={uploading}
+                  className="absolute top-2 right-2 w-8 h-8 bg-red-500 rounded-full items-center justify-center"
+                  onPress={handleRemoveImage}
                 >
-                  <Text className="text-white font-semibold">
-                    {uploading ? 'Uploading...' : 'Pick Image'}
-                  </Text>
+                  <X size={16} color="white" />
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                  className="flex-1 bg-gray-500 py-3 rounded-xl items-center"
-                  onPress={handleTakePhoto}
-                  disabled={uploading}
-                >
-                  <Text className="text-white font-semibold">Take Photo</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+              )}
+            </TouchableOpacity>
           </View>
 
           {/* Form Fields */}
-          <View className="space-y-4">
+          <View className="gap-2">
             {/* Brand */}
             <View>
-              <Text className="text-gray-700 font-medium mb-2">Brand *</Text>
+              <Text className="text-gray-700 font-medium mb-2">
+                Brand <Text className="text-red-500">*</Text>
+              </Text>
               <TextInput
                 className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
                 value={formData.brand}
@@ -362,7 +345,9 @@ export default function EditWatchPage() {
 
             {/* Model */}
             <View>
-              <Text className="text-gray-700 font-medium mb-2">Model *</Text>
+              <Text className="text-gray-700 font-medium mb-2">
+                Model <Text className="text-red-500">*</Text>
+              </Text>
               <TextInput
                 className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
                 value={formData.model}
@@ -374,7 +359,9 @@ export default function EditWatchPage() {
 
             {/* Price */}
             <View>
-              <Text className="text-gray-700 font-medium mb-2">Price *</Text>
+              <Text className="text-gray-700 font-medium mb-2">
+                Price <Text className="text-red-500">*</Text>
+              </Text>
               <TextInput
                 className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
                 value={formData.price}
@@ -428,7 +415,7 @@ export default function EditWatchPage() {
             </View>
           </View>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       {/* Action Buttons */}
       <View className="p-4 border-t border-gray-200 flex-row gap-4">

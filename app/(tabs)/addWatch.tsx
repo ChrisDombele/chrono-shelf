@@ -2,7 +2,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useFetchWatchData } from '@/hooks/fetchWatchData';
 import { useWatchImages } from '@/hooks/useWatchImages';
 import { router } from 'expo-router';
-import { Upload } from 'lucide-react-native';
+import { Upload, X } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   Alert,
@@ -120,21 +120,32 @@ const AddWatchPage = () => {
     }
   };
 
+  const handleDeleteImage = () => {
+    setNewImageFile(null);
+  };
+
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 px-4">
-      <KeyboardAwareScrollView bottomOffset={16} className="flex-1">
+    <SafeAreaView
+      className="flex-1 bg-gray-50 px-4"
+      edges={['top', 'left', 'right']}
+    >
+      <KeyboardAwareScrollView
+        bottomOffset={16}
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+      >
         {/* <ScrollView className="flex-1" showsVerticalScrollIndicator={false}> */}
         {/* Watch Image */}
         <View className="my-6">
           <TouchableOpacity
             onPress={handleAddPhoto}
-            className="w-full h-40 border-2 border-dashed border-gray-300 rounded-xl bg-white items-center justify-center"
+            className="w-full h-64 border-2 border-dashed border-gray-300 rounded-xl bg-white items-center justify-center"
           >
             {newImageFile ? (
               <Image
                 source={{ uri: newImageFile }}
                 className="w-full h-full rounded-xl"
-                resizeMode="cover"
+                resizeMode="center"
               />
             ) : (
               <View className="items-center">
@@ -142,106 +153,104 @@ const AddWatchPage = () => {
                 <Text className="text-blue-600 font-medium">Add Photo</Text>
               </View>
             )}
+
+            {/* Remove Image Button */}
+            {newImageFile && (
+              <TouchableOpacity
+                className="absolute top-2 right-2 w-8 h-8 bg-red-500 rounded-full items-center justify-center"
+                onPress={handleDeleteImage}
+              >
+                <X size={16} color="white" />
+              </TouchableOpacity>
+            )}
           </TouchableOpacity>
         </View>
 
         {/* Form Fields */}
-        <View className="space-y-4">
-          {/* Brand and Model Row */}
-          <View className="flex-row space-x-3">
-            <View className="flex-1">
-              <Text className="text-base font-medium text-gray-900 mb-2">
-                Brand <Text className="text-red-500">*</Text>
-              </Text>
-              <TextInput
-                className="bg-gray-100 px-4 py-3 rounded-xl text-base text-gray-900"
-                placeholder="e.g. Rolex"
-                placeholderTextColor="#9CA3AF"
-                value={watchData.brand}
-                onChangeText={(value) => handleInputChange('brand', value)}
-              />
-            </View>
-            <View className="flex-1">
-              <Text className="text-base font-medium text-gray-900 mb-2">
-                Model <Text className="text-red-500">*</Text>
-              </Text>
-              <TextInput
-                className="bg-gray-100 px-4 py-3 rounded-xl text-base text-gray-900"
-                placeholder="e.g. Submariner"
-                placeholderTextColor="#9CA3AF"
-                value={watchData.model}
-                onChangeText={(value) => handleInputChange('model', value)}
-              />
-            </View>
+        <View className="gap-2">
+          {/* Brand */}
+          <View>
+            <Text className="text-gray-700 font-medium mb-2">
+              Brand <Text className="text-red-500">*</Text>
+            </Text>
+            <TextInput
+              className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
+              value={watchData.brand}
+              onChangeText={(value) => handleInputChange('brand', value)}
+              placeholder="Enter brand name"
+              placeholderTextColor="#9CA3AF"
+            />
+          </View>
+
+          {/* Model */}
+          <View>
+            <Text className="text-gray-700 font-medium mb-2">
+              Model <Text className="text-red-500">*</Text>
+            </Text>
+            <TextInput
+              className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
+              value={watchData.model}
+              onChangeText={(value) => handleInputChange('model', value)}
+              placeholder="Enter model name"
+              placeholderTextColor="#9CA3AF"
+            />
           </View>
 
           {/* Price */}
           <View>
-            <Text className="text-base font-medium text-gray-900 mb-2">
+            <Text className="text-gray-700 font-medium mb-2">
               Price <Text className="text-red-500">*</Text>
             </Text>
-            <View className="flex-row items-center bg-gray-100 rounded-xl">
-              <Text className="text-gray-600 pl-4 pr-1 text-base">$</Text>
-              <TextInput
-                className="flex-1 py-3 pr-4 text-base text-gray-900"
-                placeholder="8995"
-                placeholderTextColor="#9CA3AF"
-                value={watchData.price}
-                onChangeText={(value) => handleInputChange('price', value)}
-                keyboardType="numeric"
-              />
-            </View>
+            <TextInput
+              className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
+              value={watchData.price}
+              onChangeText={(value) => handleInputChange('price', value)}
+              placeholder="0.00"
+              placeholderTextColor="#9CA3AF"
+              keyboardType="numeric"
+            />
           </View>
 
           {/* Reference */}
           <View>
-            <Text className="text-base font-medium text-gray-900 mb-2">
-              Reference
-            </Text>
+            <Text className="text-gray-700 font-medium mb-2">Reference</Text>
             <TextInput
-              className="bg-gray-100 px-4 py-3 rounded-xl text-base text-gray-900"
-              placeholder="e.g. 114060"
-              placeholderTextColor="#9CA3AF"
+              className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
               value={watchData.reference}
               onChangeText={(value) => handleInputChange('reference', value)}
+              placeholder="Enter reference number"
+              placeholderTextColor="#9CA3AF"
             />
           </View>
 
           {/* Website Link */}
           <View>
-            <Text className="text-base font-medium text-gray-900 mb-2">
-              Website Link
-            </Text>
+            <Text className="text-gray-700 font-medium mb-2">Website Link</Text>
             <TextInput
-              className="bg-gray-100 px-4 py-3 rounded-xl text-base text-gray-900"
-              placeholder="https://..."
-              placeholderTextColor="#9CA3AF"
+              className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
               value={watchData.link}
               onChangeText={(value) => handleInputChange('link', value)}
+              placeholder="https://..."
+              placeholderTextColor="#9CA3AF"
               keyboardType="url"
               autoCapitalize="none"
             />
           </View>
 
-          {/* Acquired Toggle */}
-          <View className="flex-row items-center justify-between py-4">
-            <View>
-              <Text className="text-base font-medium text-gray-900">
-                Acquired
-              </Text>
-              <Text className="text-sm text-gray-600">
-                Do you own this watch?
-              </Text>
+          {/* Acquired Status */}
+          <View>
+            <Text className="text-gray-700 font-medium mb-2">Acquired</Text>
+            <View className="flex-row items-center justify-between">
+              <Text className="text-gray-600">Do you own this watch?</Text>
+              <Switch
+                value={watchData.acquired}
+                onValueChange={(value) =>
+                  setWatchData((prev) => ({ ...prev, acquired: value }))
+                }
+                trackColor={{ false: '#D1D5DB', true: '#3B82F6' }}
+                thumbColor={watchData.acquired ? '#FFFFFF' : '#FFFFFF'}
+              />
             </View>
-            <Switch
-              value={watchData.acquired}
-              onValueChange={(value) =>
-                setWatchData((prev) => ({ ...prev, acquired: value }))
-              }
-              trackColor={{ false: '#F3F4F6', true: '#3B82F6' }}
-              thumbColor={watchData.acquired ? '#FFFFFF' : '#FFFFFF'}
-              ios_backgroundColor="#F3F4F6"
-            />
           </View>
         </View>
 
