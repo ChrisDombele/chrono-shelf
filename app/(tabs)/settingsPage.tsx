@@ -3,6 +3,7 @@ import { Link } from 'expo-router';
 import {
   Bell,
   ChevronRight,
+  Database,
   Download,
   EyeOff,
   HelpCircle,
@@ -24,7 +25,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Settings() {
   const { session } = useAuth();
-  const [pushNotifications, setPushNotifications] = useState(true);
+  const [pushNotifications, setPushNotifications] = useState(false);
   const [privacyMode, setPrivacyMode] = useState(false);
 
   const handleExportData = () => {
@@ -55,12 +56,15 @@ export default function Settings() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView
+      className="flex-1 bg-gray-50 "
+      edges={['top', 'left', 'right']}
+    >
       <ScrollView className="flex-1">
         {/* Appearance Section */}
         <View className="bg-white m-4 rounded-lg shadow-sm">
-          <View className="flex-row items-center p-4">
-            <Sun size={20} color="#666" className="mr-3" />
+          <View className="flex-row items-center p-4 gap-2">
+            <Sun size={20} color="#666" className="" />
             <Text className="text-lg font-semibold text-gray-900">
               Appearance
             </Text>
@@ -85,8 +89,8 @@ export default function Settings() {
 
         {/* Account Section */}
         <View className="bg-white m-4 rounded-lg shadow-sm">
-          <View className="flex-row items-center p-4">
-            <User size={20} color="#666" className="mr-3" />
+          <View className="flex-row items-center p-4 gap-2">
+            <User size={20} color="#666" />
             <Text className="text-lg font-semibold text-gray-900">Account</Text>
           </View>
           <Link href="/settings/accountPage" push asChild>
@@ -113,13 +117,16 @@ export default function Settings() {
 
         {/* Preferences Section */}
         <View className="bg-white m-4 rounded-lg shadow-sm">
-          <Text className="text-lg font-semibold text-gray-900 p-4 pb-2">
-            Preferences
-          </Text>
+          <View className="flex-row items-center p-4 gap-2">
+            <User size={20} color="#666" />
+            <Text className="text-lg font-semibold text-gray-900">
+              Preferences
+            </Text>
+          </View>
 
-          <View className="flex-row items-center justify-between p-4 border-b border-gray-100">
-            <View className="flex-row items-center flex-1">
-              <Bell size={20} color="#666" className="mr-3" />
+          <View className="flex-row items-center justify-between pl-4 pr-4 pb-4 border-b border-gray-100">
+            <View className="flex-row items-center flex-1 gap-2">
+              <Bell size={20} color="#666" />
               <View className="flex-1">
                 <Text className="text-base font-medium text-gray-900">
                   Push Notifications
@@ -138,8 +145,8 @@ export default function Settings() {
           </View>
 
           <View className="flex-row items-center justify-between p-4">
-            <View className="flex-row items-center flex-1">
-              <EyeOff size={20} color="#666" className="mr-3" />
+            <View className="flex-row items-center flex-1 gap-2">
+              <EyeOff size={20} color="#666" />
               <View className="flex-1">
                 <Text className="text-base font-medium text-gray-900">
                   Privacy Mode
@@ -160,15 +167,18 @@ export default function Settings() {
 
         {/* Data Management Section */}
         <View className="bg-white m-4 rounded-lg shadow-sm">
-          <Text className="text-lg font-semibold text-gray-900 p-4 pb-2">
-            Data Management
-          </Text>
+          <View className="flex-row items-center p-4 gap-2">
+            <Database size={20} color="#666" />
+            <Text className="text-lg font-semibold text-gray-900">
+              Data Management
+            </Text>
+          </View>
 
           <TouchableOpacity
-            className="flex-row items-center p-4 border-b border-gray-100"
+            className="flex-row items-center pl-4 pr-4 pb-4 border-b border-gray-100 gap-2"
             onPress={handleExportData}
           >
-            <Download size={20} color="#666" className="mr-3" />
+            <Download size={20} color="#666" />
             <Text className="text-base font-medium text-gray-900 flex-1">
               Export Collection Data
             </Text>
@@ -176,7 +186,7 @@ export default function Settings() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="flex-row items-center p-4"
+            className="flex-row items-center p-4 gap-2"
             onPress={handleClearData}
           >
             <Trash2 size={20} color="#EF4444" className="mr-3" />
@@ -189,15 +199,16 @@ export default function Settings() {
 
         {/* Support Section */}
         <View className="bg-white m-4 rounded-lg shadow-sm">
-          <Text className="text-lg font-semibold text-gray-900 p-4 pb-2">
-            Support
-          </Text>
+          <View className="flex-row items-center p-4 gap-2">
+            <HelpCircle size={20} color="#666" />
+            <Text className="text-lg font-semibold text-gray-900">Support</Text>
+          </View>
 
           <TouchableOpacity
-            className="flex-row items-center p-4 border-b border-gray-100"
+            className="flex-row items-center pl-4 pr-4 pb-4 border-b border-gray-100 gap-2"
             onPress={handleHelpFAQ}
           >
-            <HelpCircle size={20} color="#666" className="mr-3" />
+            <HelpCircle size={20} color="#666" />
             <Text className="text-base font-medium text-gray-900 flex-1">
               Help & FAQ
             </Text>
@@ -205,10 +216,10 @@ export default function Settings() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="flex-row items-center p-4"
+            className="flex-row items-center p-4 gap-2"
             onPress={handleRateApp}
           >
-            <Star size={20} color="#666" className="mr-3" />
+            <Star size={20} color="#666" />
             <Text className="text-base font-medium text-gray-900 flex-1">
               Rate the App
             </Text>
