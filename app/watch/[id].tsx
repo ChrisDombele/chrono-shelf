@@ -3,10 +3,11 @@ import { useFetchWatchData, WatchWithBrand } from '@/hooks/fetchWatchData';
 // import Clipboard from '@react-native-clipboard/clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   Image,
+  Linking,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -234,6 +235,13 @@ export default function WatchDetailPage() {
                 <Text className="text-base font-semibold text-gray-900">
                   {watch.line}
                 </Text>
+              </View>
+
+              <View className="mb-4">
+                <Text className="text-gray-500 text-sm mb-1">Link</Text>
+                <TouchableOpacity onPress={() => Linking.openURL(watch.link)}>
+                  <Text className="text-blue-500 text-sm">Open Link</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>

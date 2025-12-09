@@ -1,6 +1,5 @@
 import { numberToFormat } from '@/app/utils/conversions';
 import { CheckCircle, Circle } from 'lucide-react-native';
-import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 interface WatchCardProps {
