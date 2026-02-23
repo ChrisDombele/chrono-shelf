@@ -1,6 +1,6 @@
 import { numberToFormat } from '@/app/utils/conversions';
 import { CheckCircle, Circle } from 'lucide-react-native';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 interface WatchCardProps {
   id: string;
@@ -33,7 +33,7 @@ export default function WatchCard({
     >
       <View className="flex-row items-center">
         {/* Watch Image */}
-        <View className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 mr-4">
+        {/* <View className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 mr-4">
           {imageUrl ? (
             <Image
               source={{ uri: imageUrl }}
@@ -45,13 +45,13 @@ export default function WatchCard({
               <Text className="text-gray-400 text-2xl">⌚</Text>
             </View>
           )}
-        </View>
+        </View> */}
 
         {/* Product Details */}
         <View className="flex-1">
           <Text className="text-lg font-bold text-gray-900 mb-1">{brand}</Text>
-          <Text className="text-sm text-gray-700 mb-1">{model}</Text>
-          <Text className="text-sm text-gray-600 mb-1">{reference}</Text>
+          <Text className="text-sm text-gray-700 mb-1">Model: {model}</Text>
+          <Text className="text-sm text-gray-600 mb-1">Ref: {reference}</Text>
           {/* <Text className="text-sm text-gray-600">{year}</Text> */}
         </View>
 

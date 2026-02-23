@@ -32,7 +32,7 @@ export default function Settings() {
     Alert.alert(
       'Export Collection Data',
       'This feature will export your watch collection data.',
-      [{ text: 'OK' }]
+      [{ text: 'OK' }],
     );
   };
 
@@ -43,7 +43,7 @@ export default function Settings() {
       [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Clear', style: 'destructive' },
-      ]
+      ],
     );
   };
 
