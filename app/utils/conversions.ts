@@ -13,4 +13,3 @@ function numberToFormat({ number, currency }: NumberToFormatProps) {
 }
 
 export { numberToFormat };
-

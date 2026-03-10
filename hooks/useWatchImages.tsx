@@ -35,12 +35,12 @@ export const useWatchImages = () => {
           console.log('✅ Supabase connected successfully');
           console.log(
             '📦 Available buckets:',
-            bucketsData?.map((b) => b.name)
+            bucketsData?.map((b) => b.name),
           );
 
           // Check if watch-images bucket exists
           const watchImagesBucket = bucketsData?.find(
-            (b) => b.name === 'watch-images'
+            (b) => b.name === 'watch-images',
           );
           if (watchImagesBucket) {
             console.log('✅ watch-images bucket found');
@@ -110,7 +110,7 @@ export const useWatchImages = () => {
         return null;
       }
     },
-    []
+    [],
   );
 
   // Upload a new image
@@ -118,107 +118,24 @@ export const useWatchImages = () => {
     async (
       watchId: string,
       imageUri: string,
-      imageName?: string
+      imageName?: string,
     ): Promise<UploadImageResult> => {
       if (!user) {
         return { success: false, error: 'User not authenticated' };
       }
 
       setUploading(true);
-      console.log('🔄 Starting upload for:', imageUri);
+      console.log('🔄 Starting upload for:', imageUri[0]);
 
       try {
         // Generate unique filename
-        const timestamp = Date.now();
-        const fileName = imageName || `watch_${watchId}_${timestamp}.jpg`;
+        const fileName = imageName || `watch_${watchId}.jpg`;
         const filePath = `${user.id}/${watchId}/${fileName}`;
-
-        console.log('📁 File path:', filePath);
-        console.log('👤 User ID:', user.id);
-        console.log('📱 Watch ID:', watchId);
-
-        // Handle file upload with proper React Native support
-        console.log('🔄 Preparing file for upload...');
-        console.log('📱 Platform:', Platform.OS);
-        console.log('📁 Image URI:', imageUri);
-
-        let fileToUpload: any;
-
-        if (Platform.OS === 'web') {
-          // For web, convert to blob
-          console.log('🌐 Web: Converting to blob...');
-          const response = await fetch(imageUri);
-          if (!response.ok) {
-            throw new Error(
-              `Failed to fetch image: ${response.status} ${response.statusText}`
-            );
-          }
-          const blob = await response.blob();
-          console.log('📦 Blob size:', blob.size, 'bytes');
-
-          // Check file size
-          const maxSize = 10 * 1024 * 1024; // 10MB
-          if (blob.size > maxSize) {
-            throw new Error(
-              `Image too large (${Math.round(blob.size / 1024 / 1024)}MB). Max 10MB.`
-            );
-          }
-
-          fileToUpload = blob;
-        } else {
-          // For React Native mobile
-          console.log('📱 Mobile: Reading file...');
-
-          try {
-            // Try to read the file as ArrayBuffer first
-            const response = await fetch(imageUri);
-            if (!response.ok) {
-              throw new Error(`Failed to read file: ${response.status}`);
-            }
-
-            const arrayBuffer = await response.arrayBuffer();
-            console.log(
-              '📦 ArrayBuffer size:',
-              arrayBuffer.byteLength,
-              'bytes'
-            );
-
-            // Check file size
-            const maxSize = 10 * 1024 * 1024; // 10MB
-            if (arrayBuffer.byteLength > maxSize) {
-              throw new Error(
-                `Image too large (${Math.round(arrayBuffer.byteLength / 1024 / 1024)}MB). Max 10MB.`
-              );
-            }
-
-            // Convert ArrayBuffer to Uint8Array for Supabase
-            fileToUpload = new Uint8Array(arrayBuffer);
-          } catch (arrayBufferError) {
-            console.log('⚠️ ArrayBuffer failed, trying FormData approach...');
-
-            // Fallback: Use the React Native file object directly
-            // This should work with Supabase's React Native implementation
-            fileToUpload = {
-              uri: imageUri,
-              name: fileName,
-              type: 'image/jpeg',
-            };
-            console.log('📱 Using file object:', fileToUpload);
-          }
-        }
-
-        // Upload to Supabase Storage
-        console.log('☁️ Uploading to Supabase Storage...');
-        console.log('📁 File path:', filePath);
-        console.log('📦 File type:', typeof fileToUpload);
 
         const { data: supabaseUploadData, error: uploadError } =
           await supabase.storage
             .from('watch-images')
-            .upload(filePath, fileToUpload, {
-              contentType: 'image/jpeg',
-              upsert: false,
-            });
+            .upload(filePath, imageUri);
 
         if (uploadError) {
           console.error('❌ Upload error details:', uploadError);
@@ -226,15 +143,15 @@ export const useWatchImages = () => {
           // Provide more specific error messages
           if (uploadError.message.includes('exceeded')) {
             throw new Error(
-              'Image file is too large. Please choose a smaller image.'
+              'Image file is too large. Please choose a smaller image.',
             );
           } else if (uploadError.message.includes('bucket')) {
             throw new Error(
-              'Storage bucket not found. Please contact support.'
+              'Storage bucket not found. Please contact support.',
             );
           } else if (uploadError.message.includes('permission')) {
             throw new Error(
-              'Permission denied. Please check your authentication.'
+              'Permission denied. Please check your authentication.',
             );
           }
 
@@ -265,22 +182,20 @@ export const useWatchImages = () => {
         };
       }
     },
-    [user]
+    [user],
   );
 
   // Pick image from camera or gallery
   const pickImage = useCallback(async (): Promise<string | null> => {
     try {
       // Request permissions
-      if (Platform.OS !== 'web') {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-          const cameraStatus =
-            await ImagePicker.requestCameraPermissionsAsync();
-          if (cameraStatus.status !== 'granted') {
-            throw new Error('Camera and gallery permissions not granted');
-          }
+
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
+        if (cameraStatus.status !== 'granted') {
+          throw new Error('Camera and gallery permissions not granted');
         }
       }
 
@@ -294,6 +209,7 @@ export const useWatchImages = () => {
       });
 
       if (!result.canceled && result.assets && result.assets[0]) {
+        console.log('🔍 Picked image:', result.assets[0].uri);
         return result.assets[0].uri;
       }
 
@@ -364,7 +280,7 @@ export const useWatchImages = () => {
         };
       }
     },
-    [user]
+    [user],
   );
 
   return {
