@@ -125,7 +125,7 @@ export const saveWatch = async ({
       link: formData.link.trim(),
       acquired: formData.acquired,
       brand_id: brandId,
-      image_url: null, // Will be updated separately if there's an image
+      image_url: watch?.image_url ?? null, // Preserve existing image; updated separately if changed
     };
 
     // Create or update watch
@@ -150,29 +150,34 @@ export const saveWatch = async ({
       // Upload new image
       try {
         const imageResult = await uploadImage(watchId, newImageFile);
+
         if (!imageResult.success) {
           Alert.alert(
-            'Image Upload Warning',
-            `Watch saved but image upload failed: ${imageResult.error}. You can try uploading the image again later.`,
+            'Image Upload Failed',
+            `Watch details were saved, but the image could not be uploaded: ${imageResult.error}`,
             [{ text: 'OK' }]
           );
         } else {
-          // Update the watch with the new image URL
           const imageUpdateResult = await updateWatch(watchId, {
             image_url: imageResult.data?.url,
           });
+
           if (!imageUpdateResult.success) {
-            console.warn('Failed to update watch with image URL');
+            Alert.alert(
+              'Image Save Failed',
+              `Image was uploaded to storage, but the link could not be saved to the database: ${imageUpdateResult.error}`,
+              [{ text: 'OK' }]
+            );
           }
         }
       } catch (uploadError) {
         Alert.alert(
           'Image Upload Error',
-          `Watch saved but image upload failed: ${uploadError instanceof Error ? uploadError.message : 'Unknown error'}. You can try uploading the image again later.`,
+          `Watch saved but image upload failed: ${uploadError instanceof Error ? uploadError.message : 'Unknown error'}.`,
           [{ text: 'OK' }]
         );
       }
-    } else if (watch && ((currentImage && !newImageFile) || imageRemoved)) {
+    } else if (watch && imageRemoved) {
       // Remove existing image
       try {
         // Delete from storage first

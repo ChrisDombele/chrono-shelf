@@ -1,7 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useFetchWatchData, WatchWithBrand } from '@/hooks/fetchWatchData';
 import { useWatchImages } from '@/hooks/useWatchImages';
-import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowLeft, Upload, X } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import {
@@ -15,15 +15,13 @@ import {
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { supabase } from '../lib/supabase';
 import { saveWatch } from '../utils/watchOperations';
 
 export default function EditWatchPage() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const { user } = useAuth();
-  const { watches, updateWatch, addWatch, addBrand, updateBrand } =
-    useFetchWatchData();
+  const { watches, updateWatch, addBrand } = useFetchWatchData();
   const { uploadImage, pickImage, takePhoto, deleteImage, uploading } =
     useWatchImages();
 
@@ -47,15 +45,6 @@ export default function EditWatchPage() {
   const [newImageFile, setnewImageFile] = useState<string | null>(null);
   const [imageRemoved, setImageRemoved] = useState(false);
 
-  const { refetch } = useFetchWatchData();
-
-  // Refresh data when screen comes into focus (e.g., after editing a watch)
-  useFocusEffect(
-    React.useCallback(() => {
-      refetch();
-    }, [refetch])
-  );
-
   // Load watch data
   useEffect(() => {
     if (id && watches.length > 0) {
@@ -73,12 +62,8 @@ export default function EditWatchPage() {
           acquired: foundWatch.acquired || false,
         });
 
-        // Load the actual image from Supabase storage if it exists
-        if (foundWatch.image_url) {
-          loadImageFromStorage(foundWatch.image_url);
-        } else {
-          setCurrentImage(null);
-        }
+        // Use the image_url directly from the database record
+        setCurrentImage(foundWatch.image_url || null);
 
         // Reset image removed flag if there's an existing image
         setImageRemoved(false);
@@ -86,57 +71,6 @@ export default function EditWatchPage() {
       setLoading(false);
     }
   }, [id, watches]);
-
-  // Load image from Supabase storage
-  const loadImageFromStorage = async (imageUrl: string) => {
-    try {
-      console.log('🔍 Original image URL:', imageUrl);
-
-      // Extract file path from the image URL
-      // The URL structure is: https://.../storage/v1/object/public/watch-images/{user_id}/{watch_id}/{filename}
-      const urlParts = imageUrl.split('/');
-      console.log('🔍 URL parts:', urlParts);
-
-      // Find the index of 'watch-images' in the URL
-      const bucketIndex = urlParts.findIndex((part) => part === 'watch-images');
-      console.log('🔍 Bucket index:', bucketIndex);
-
-      if (bucketIndex === -1) {
-        console.error('Invalid image URL structure');
-        setCurrentImage(null);
-        return;
-      }
-
-      // Extract the path after 'watch-images'
-      const pathAfterBucket = urlParts.slice(bucketIndex + 1);
-      console.log('🔍 Path after bucket:', pathAfterBucket);
-
-      if (pathAfterBucket.length < 3) {
-        console.error('Invalid path structure after bucket');
-        setCurrentImage(null);
-        return;
-      }
-
-      const [userId, watchId, fileName] = pathAfterBucket;
-      const filePath = `${userId}/${watchId}/${fileName}`;
-
-      console.log('🔍 Loading image from path:', filePath);
-
-      const { data } = await supabase.storage
-        .from('watch-images')
-        .getPublicUrl(filePath);
-      console.log('🔍 Public URL:', data?.publicUrl);
-
-      if (data?.publicUrl) {
-        setCurrentImage(data.publicUrl);
-      } else {
-        setCurrentImage(null);
-      }
-    } catch (error) {
-      console.error('Error loading image from storage:', error);
-      setCurrentImage(null);
-    }
-  };
 
   // Handle back navigation
   const handleBack = () => {

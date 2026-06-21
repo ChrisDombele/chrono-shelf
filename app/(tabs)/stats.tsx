@@ -12,9 +12,10 @@ import {
   Star,
   TrendingUp,
 } from 'lucide-react-native';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from 'expo-router';
 
 // Icon constants - change these to swap icons across the stats page
 const STATS_ICONS = {
@@ -122,7 +123,14 @@ function WatchHighlightCard({
 }
 
 export default function Stats() {
-  const { watches } = useFetchWatchData();
+  const { watches, refetch } = useFetchWatchData();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
+
   const {
     getTotalValue,
     acquiredCount,

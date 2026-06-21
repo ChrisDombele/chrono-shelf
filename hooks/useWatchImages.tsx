@@ -124,18 +124,38 @@ export const useWatchImages = () => {
         return { success: false, error: 'User not authenticated' };
       }
 
+      // setUploading(true);
+      // console.log('🔄 Starting upload for:', imageUri[0]);
+
+      // try {
+      //   // Generate unique filename
+      //   const fileName = imageName || `watch_${watchId}.jpg`;
+      //   const filePath = `${user.id}/${watchId}/${fileName}`;
+
+      //   const { data: supabaseUploadData, error: uploadError } =
+      //     await supabase.storage
+      //       .from('watch-images')
+      //       .upload(filePath, imageUri);
+
       setUploading(true);
-      console.log('🔄 Starting upload for:', imageUri[0]);
 
       try {
-        // Generate unique filename
         const fileName = imageName || `watch_${watchId}.jpg`;
         const filePath = `${user.id}/${watchId}/${fileName}`;
 
-        const { data: supabaseUploadData, error: uploadError } =
-          await supabase.storage
-            .from('watch-images')
-            .upload(filePath, imageUri);
+        const response = await fetch(imageUri);
+        if (!response.ok) {
+          throw new Error(`Failed to read image: ${response.status}`);
+        }
+        const arrayBuffer = await response.arrayBuffer();
+        const fileBody = new Uint8Array(arrayBuffer);
+
+        const { error: uploadError } = await supabase.storage
+          .from('watch-images')
+          .upload(filePath, fileBody, {
+            contentType: 'image/jpeg',
+            upsert: true,
+          });
 
         if (uploadError) {
           console.error('❌ Upload error details:', uploadError);
@@ -158,17 +178,20 @@ export const useWatchImages = () => {
           throw uploadError;
         }
 
-        console.log('✅ Upload successful:', supabaseUploadData);
+        // console.log('✅ Upload successful:', supabaseUploadData);
 
         // Get public URL
         const { data: urlData } = supabase.storage
           .from('watch-images')
           .getPublicUrl(filePath);
 
-        console.log('🔗 Public URL generated:', urlData.publicUrl);
+        // Append a timestamp to bust React Native's image cache.
+        // The filename stays the same (upsert overwrites), so without this
+        // the Image component would serve the stale cached version.
+        const urlWithCacheBust = `${urlData.publicUrl}?t=${Date.now()}`;
 
         setUploading(false);
-        return { success: true, data: { url: urlData.publicUrl } };
+        return { success: true, data: { url: urlWithCacheBust } };
       } catch (error) {
         setUploading(false);
         console.error('❌ Error uploading image:', error);

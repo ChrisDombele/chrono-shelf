@@ -1,9 +1,9 @@
 import { numberToFormat } from '@/app/utils/conversions';
 import { useFetchWatchData, WatchWithBrand } from '@/hooks/fetchWatchData';
 // import Clipboard from '@react-native-clipboard/clipboard';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowLeft, Edit, Trash2 } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Image,
@@ -18,9 +18,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function WatchDetailPage() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { watches, deleteWatch, toggleAcquired } = useFetchWatchData();
+  const { watches, deleteWatch, toggleAcquired, refetch } = useFetchWatchData();
   const [watch, setWatch] = useState<WatchWithBrand | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Refresh data when screen comes into focus (e.g., after editing a watch)
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   // Find the watch by ID
   useEffect(() => {
@@ -79,7 +86,7 @@ export default function WatchDetailPage() {
               }
             },
           },
-        ]
+        ],
       );
     }
   };
@@ -135,20 +142,20 @@ export default function WatchDetailPage() {
           </TouchableOpacity>
 
           {/* Watch Image */}
-          <View className="flex-1 items-center justify-center px-8">
-            <View className="w-64 h-64 rounded-2xl overflow-hidden bg-gray-800">
-              {watch.link ? (
-                <Image
-                  source={{ uri: watch.link }}
-                  className="w-full h-full"
-                  resizeMode="cover"
-                />
-              ) : (
-                <View className="w-full h-full bg-gray-700 items-center justify-center">
-                  <Text className="text-white text-lg">Watch Image</Text>
-                </View>
-              )}
-            </View>
+          <View className="flex-1 items-center justify-center">
+            {/* <View className="w-64 h-64 rounded-2xl overflow-hidden bg-gray-800"> */}
+            {watch.image_url ? (
+              <Image
+                source={{ uri: watch.image_url }}
+                className="w-full h-full"
+                resizeMode="cover"
+              />
+            ) : (
+              <View className="w-full h-full bg-gray-700 items-center justify-center">
+                <Text className="text-white text-lg">Watch Image</Text>
+              </View>
+            )}
+            {/* </View> */}
           </View>
 
           {/* Watch Info Overlay */}
