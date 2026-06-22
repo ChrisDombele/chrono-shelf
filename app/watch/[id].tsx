@@ -1,24 +1,29 @@
-import { numberToFormat } from '@/app/utils/conversions';
 import { useFetchWatchData, WatchWithBrand } from '@/hooks/fetchWatchData';
-// import Clipboard from '@react-native-clipboard/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { ArrowLeft, Edit, Trash2 } from 'lucide-react-native';
+import { ArrowLeft, Copy, Edit, Trash2, Watch } from 'lucide-react-native';
+import { useColorScheme } from 'nativewind';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Image,
   Linking,
+  Platform,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { numberToFormat } from '../utils/conversions';
 
 export default function WatchDetailPage() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { watches, deleteWatch, toggleAcquired, refetch } = useFetchWatchData();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   const [watch, setWatch] = useState<WatchWithBrand | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +31,7 @@ export default function WatchDetailPage() {
   useFocusEffect(
     React.useCallback(() => {
       refetch();
-    }, [refetch])
+    }, [refetch]),
   );
 
   // Find the watch by ID
@@ -38,25 +43,28 @@ export default function WatchDetailPage() {
     }
   }, [id, watches]);
 
-  // Handle back navigation
+  const copyToClipboard = (text: string, label: string) => {
+    Clipboard.setString(text);
+    // Android 12+ shows a system toast automatically — no manual feedback needed.
+    // iOS has no built-in clipboard notification, manual feedback needed.
+    if (Platform.OS === 'ios') {
+      Alert.alert('Copied', `${label} copied to clipboard`);
+    }
+  };
+
   const handleBack = () => {
     router.back();
   };
 
-  // Handle wishlist toggle
   const handleWishlistToggle = async () => {
     if (watch) {
       const result = await toggleAcquired(watch.id);
-      if (result.success) {
-        // The watch list will be updated automatically through the hook
-        console.log('Watch status updated');
-      } else {
+      if (!result.success) {
         Alert.alert('Error', result.error || 'Failed to update watch status');
       }
     }
   };
 
-  // Handle edit
   const handleEdit = () => {
     if (watch) {
       router.push({
@@ -66,7 +74,6 @@ export default function WatchDetailPage() {
     }
   };
 
-  // Handle delete
   const handleDelete = async () => {
     if (watch) {
       Alert.alert(
@@ -91,30 +98,29 @@ export default function WatchDetailPage() {
     }
   };
 
-  // Copy text to clipboard
-  // const copyToClipboard = (text: string) => {
-  //   Clipboard.setString(text);
-  //   // Optionally show a success message
-  //   Alert.alert('Copied!', 'Text copied to clipboard');
-  // };
-
-  // Show loading state
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-#e8e8e8-900" edges={['top']}>
+      <SafeAreaView
+        className="flex-1 bg-gray-50 dark:bg-gray-950"
+        edges={['top']}
+      >
         <View className="flex-1 items-center justify-center">
-          <Text className="text-white text-lg">Loading...</Text>
+          <Text className="text-gray-900 dark:text-white text-lg">
+            Loading...
+          </Text>
         </View>
       </SafeAreaView>
     );
   }
 
-  // Show error state if watch not found
   if (!watch) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-900" edges={['top']}>
+      <SafeAreaView
+        className="flex-1 bg-gray-50 dark:bg-gray-950"
+        edges={['top']}
+      >
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-white text-xl text-center mb-4">
+          <Text className="text-gray-900 dark:text-white text-xl text-center mb-4">
             Watch not found
           </Text>
           <TouchableOpacity
@@ -129,13 +135,20 @@ export default function WatchDetailPage() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg#e8e8e8-#e8e8e8-900" edges={['top']}>
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Top Section - Dark background with watch image and info */}
+    <SafeAreaView
+      className="flex-1 bg-gray-50 dark:bg-gray-950"
+      edges={['top']}
+    >
+      {/* ScrollView has its own light/dark bg so the area below the hero is themed correctly */}
+      <ScrollView
+        className="flex-1 bg-gray-50 dark:bg-gray-950"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Hero Section — intentionally always dark */}
         <View className="relative h-96 bg-gray-900 overflow-hidden">
           {/* Back Button */}
           <TouchableOpacity
-            className="absolute top-4 left-4 z-10 w-10 h-10 bg-gray-800 rounded-md items-center justify-center"
+            className="absolute top-4 left-4 z-10 w-10 h-10 rounded-md items-center justify-center bg-gray-500/60"
             onPress={handleBack}
           >
             <ArrowLeft size={20} color="white" />
@@ -143,7 +156,6 @@ export default function WatchDetailPage() {
 
           {/* Watch Image */}
           <View className="flex-1 items-center justify-center">
-            {/* <View className="w-64 h-64 rounded-2xl overflow-hidden bg-gray-800"> */}
             {watch.image_url ? (
               <Image
                 source={{ uri: watch.image_url }}
@@ -152,14 +164,13 @@ export default function WatchDetailPage() {
               />
             ) : (
               <View className="w-full h-full bg-gray-700 items-center justify-center">
-                <Text className="text-white text-lg">Watch Image</Text>
+                <Watch size={64} color="#9CA3AF" strokeWidth={1} />
               </View>
             )}
-            {/* </View> */}
           </View>
 
           {/* Watch Info Overlay */}
-          <View className="absolute bottom-0 p-6 bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent">
+          <View className="absolute bottom-0 p-6">
             {/* Wishlist/Acquired Toggle */}
             <TouchableOpacity
               className="flex-row items-center mb-3"
@@ -187,68 +198,121 @@ export default function WatchDetailPage() {
           </View>
         </View>
 
-        {/* Price Section */}
-        <View className="mx-4 mt-8 bg-white rounded-2xl p-6 shadow-lg">
-          <Text className="text-gray-500 text-center text-sm mb-2">Price</Text>
-          <Text className="text-3xl font-bold text-center text-gray-900">
-            {numberToFormat({ number: watch.price, currency: 'USD' })}
+        {/* Price Card */}
+        <View className="mx-4 mt-8 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+          <Text className="text-gray-500 dark:text-gray-400 text-center text-sm mb-2">
+            Price
           </Text>
+
+          <TouchableOpacity
+            className="flex-row items-center justify-center gap-1"
+            onPress={() =>
+              copyToClipboard(
+                numberToFormat({ number: watch.price, currency: 'USD' }),
+                'Price',
+              )
+            }
+            activeOpacity={0.6}
+          >
+            <Text className="text-3xl font-bold text-center text-gray-900 dark:text-white">
+              {numberToFormat({ number: watch.price, currency: 'USD' })}
+            </Text>
+            <Copy size={13} color={isDark ? '#6B7280' : '#9CA3AF'} />
+          </TouchableOpacity>
         </View>
 
-        {/* Details Section */}
-        <View className="mx-4 mt-4 bg-white rounded-2xl p-6 shadow-lg">
-          <Text className="text-xl font-bold text-gray-900 mb-6">Details</Text>
+        {/* Details Card */}
+        <View className="mx-4 mt-4 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+          <Text className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+            Details
+          </Text>
 
           <View className="flex-row">
             {/* Left Column */}
             <View className="flex-1">
               <View className="mb-4">
-                <Text className="text-gray-500 text-sm mb-1">Brand</Text>
-                <Text className="text-base font-semibold text-gray-900">
-                  {watch.brand?.brand_name || 'Unknown Brand'}
+                <Text className="text-gray-500 dark:text-gray-400 text-sm mb-1">
+                  Brand
                 </Text>
+                <TouchableOpacity
+                  className="flex-row items-center gap-1"
+                  onPress={() =>
+                    copyToClipboard(watch.brand?.brand_name || '', 'Brand')
+                  }
+                  activeOpacity={0.6}
+                >
+                  <Text className="text-base font-semibold text-gray-900 dark:text-white">
+                    {watch.brand?.brand_name || 'Unknown Brand'}
+                  </Text>
+                  <Copy size={13} color={isDark ? '#6B7280' : '#9CA3AF'} />
+                </TouchableOpacity>
               </View>
 
               <View className="mb-4">
-                <Text className="text-gray-500 text-sm mb-1">Reference</Text>
-                {/* TODO: Add copy to clipboard */}
-                {/* <TouchableOpacity
-                  onPress={() => copyToClipboard(watch.reference)}
+                <Text className="text-gray-500 dark:text-gray-400 text-sm mb-1">
+                  Reference
+                </Text>
+                <TouchableOpacity
+                  className="flex-row items-center gap-1"
+                  onPress={() => copyToClipboard(watch.reference, 'Reference')}
+                  activeOpacity={0.6}
                 >
-                  <Text className="text-base font-semibold text-gray-900">
+                  <Text className="text-base font-semibold text-gray-900 dark:text-white">
                     {watch.reference}
                   </Text>
-                </TouchableOpacity> */}
-                <Text className="text-base font-semibold text-gray-900">
-                  {watch.reference}
-                </Text>
+                  <Copy size={13} color={isDark ? '#6B7280' : '#9CA3AF'} />
+                </TouchableOpacity>
               </View>
 
               <View className="mb-4">
-                <Text className="text-gray-500 text-sm mb-1">Status</Text>
+                <Text className="text-gray-500 dark:text-gray-400 text-sm mb-1">
+                  Status
+                </Text>
                 <View className="flex-row items-center">
-                  <View className="w-2 h-2 rounded-full bg-gray-400 mr-2" />
-                  <Text className="text-base font-semibold text-gray-900">
+                  <View
+                    className={`w-2 h-2 rounded-full mr-2 ${
+                      watch.acquired ? 'bg-blue-500' : 'bg-gray-400'
+                    }`}
+                  />
+                  <Text className="text-base font-semibold text-gray-900 dark:text-white">
                     {watch.acquired ? 'Acquired' : 'On Wishlist'}
                   </Text>
                 </View>
               </View>
             </View>
 
-            {/* Right Column */}
-            <View className="flex-1">
-              <View className="mb-4">
-                <Text className="text-gray-500 text-sm mb-1">Model</Text>
-                <Text className="text-base font-semibold text-gray-900">
-                  {watch.line}
+            {/* Right Column — right-aligned */}
+            <View className="flex-1 items-end">
+              <View className="mb-4 items-end">
+                <Text className="text-gray-500 dark:text-gray-400 text-sm mb-1">
+                  Model
                 </Text>
+                <TouchableOpacity
+                  className="flex-row items-center gap-1"
+                  onPress={() => copyToClipboard(watch.line, 'Model')}
+                  activeOpacity={0.6}
+                >
+                  <Text className="text-base font-semibold text-gray-900 dark:text-white text-right">
+                    {watch.line}
+                  </Text>
+                  <Copy size={13} color={isDark ? '#6B7280' : '#9CA3AF'} />
+                </TouchableOpacity>
               </View>
 
-              <View className="mb-4">
-                <Text className="text-gray-500 text-sm mb-1">Link</Text>
-                <TouchableOpacity onPress={() => Linking.openURL(watch.link)}>
-                  <Text className="text-blue-500 text-sm">Open Link</Text>
-                </TouchableOpacity>
+              <View className="mb-4 items-end">
+                <Text className="text-gray-500 dark:text-gray-400 text-sm mb-1">
+                  Link
+                </Text>
+                <View className="flex-row items-center gap-2">
+                  <TouchableOpacity onPress={() => Linking.openURL(watch.link)}>
+                    <Text className="text-blue-500 text-sm">Open Link</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => copyToClipboard(watch.link, 'Link')}
+                  >
+                    <Copy size={13} color={isDark ? '#6B7280' : '#9CA3AF'} />
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </View>
@@ -257,19 +321,21 @@ export default function WatchDetailPage() {
         {/* Action Buttons */}
         <View className="mx-4 mt-6 mb-8 flex-row gap-4">
           <TouchableOpacity
-            className="flex-1 bg-white border border-gray-300 rounded-2xl py-4 flex-row items-center justify-center"
+            className="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-2xl py-4 flex-row items-center justify-center"
             onPress={handleEdit}
           >
-            <Edit size={20} color="#374151" className="mr-2" />
-            <Text className="text-gray-700 font-semibold ml-2">Edit</Text>
+            <Edit size={20} color={isDark ? '#D1D5DB' : '#374151'} />
+            <Text className="text-gray-700 dark:text-gray-200 font-semibold ml-2">
+              Edit
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="flex-1 border border-[#af2c2c] rounded-2xl py-4 flex-row items-center justify-center"
+            className="flex-1 border border-red-700 rounded-2xl py-4 flex-row items-center justify-center"
             onPress={handleDelete}
           >
-            <Trash2 size={20} color="#af2c2c" className="mr-2" />
-            <Text className="text-[##af2c2c] font-semibold ml-2">Delete</Text>
+            <Trash2 size={20} color="#b91c1c" />
+            <Text className="text-red-700 font-semibold ml-2">Delete</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

@@ -1,9 +1,24 @@
+import { useTheme } from '@/contexts/ThemeContext';
 import { Tabs } from 'expo-router';
 import { ChartLine, Clock, ClockPlus, Settings2 } from 'lucide-react-native';
 
 export default function TabLayout() {
+  const { isDarkMode } = useTheme();
+
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: '#0B2048' }}>
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: isDarkMode ? '#60A5FA' : '#0B2048',
+        tabBarInactiveTintColor: isDarkMode ? '#6B7280' : '#9CA3AF',
+        tabBarStyle: {
+          backgroundColor: isDarkMode ? '#1F2937' : '#FFFFFF',
+          borderTopColor: isDarkMode ? '#374151' : '#E5E7EB',
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{

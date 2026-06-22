@@ -44,7 +44,7 @@ export default function App() {
   );
 
   return (
-    <SafeAreaView className="flex-1 px-4" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-950 px-4" edges={['top', 'left', 'right']}>
       <FlashList
         data={watches}
         renderItem={({ item }) => (

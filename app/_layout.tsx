@@ -1,4 +1,5 @@
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
@@ -26,19 +27,15 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   return (
-    <>
-      <SafeAreaProvider>
-        <KeyboardProvider>
+    <SafeAreaProvider>
+      <KeyboardProvider>
+        <ThemeProvider>
           <AuthProvider>
-            <StatusBar
-              style={'dark'}
-              translucent={true}
-              backgroundColor={'#121824'}
-            />
+            <StatusBar style="auto" translucent={true} />
             <RootLayoutNav />
           </AuthProvider>
-        </KeyboardProvider>
-      </SafeAreaProvider>
-    </>
+        </ThemeProvider>
+      </KeyboardProvider>
+    </SafeAreaProvider>
   );
 }

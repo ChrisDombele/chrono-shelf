@@ -207,14 +207,14 @@ export default function EditWatchPage() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-white dark:bg-gray-950" edges={['top']}>
       <KeyboardAwareScrollView
         className="flex-1"
         bottomOffset={16}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View className="flex-row items-center p-4 border-b border-gray-200">
+        <View className="flex-row items-center p-4 border-b border-gray-200 dark:border-gray-700">
           <TouchableOpacity
             className="w-10 h-10 rounded-full items-center justify-center mr-3"
             onPress={handleBack}
@@ -222,19 +222,19 @@ export default function EditWatchPage() {
             <ArrowLeft size={24} color="#374151" />
           </TouchableOpacity>
           <View className="flex-1">
-            <Text className="text-2xl font-bold text-gray-900">Edit Watch</Text>
-            <Text className="text-gray-500 text-sm">Enter watch details</Text>
+            <Text className="text-2xl font-bold text-gray-900 dark:text-white">Edit Watch</Text>
+            <Text className="text-gray-500 dark:text-gray-400 text-sm">Enter watch details</Text>
           </View>
         </View>
 
-        {/* Contianer */}
+        {/* Container */}
         <View className="px-4">
           {/* Watch Image Section */}
-          <View className="pb-4">
+          <View className="pb-4 pt-4">
             <TouchableOpacity
               onPress={handlePickImage}
               disabled={uploading}
-              className="w-full h-48 bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 items-center justify-center"
+              className="w-full h-48 bg-gray-100 dark:bg-gray-800 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 items-center justify-center"
             >
               {currentImage || newImageFile ? (
                 <Image
@@ -265,11 +265,11 @@ export default function EditWatchPage() {
           <View className="gap-2">
             {/* Brand */}
             <View>
-              <Text className="text-gray-700 font-medium mb-2">
+              <Text className="text-gray-700 dark:text-gray-300 font-medium mb-2">
                 Brand <Text className="text-red-500">*</Text>
               </Text>
               <TextInput
-                className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
+                className="w-full h-12 px-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-900 dark:text-white"
                 value={formData.brand}
                 onChangeText={(value) => handleInputChange('brand', value)}
                 placeholder="Enter brand name"
@@ -279,11 +279,11 @@ export default function EditWatchPage() {
 
             {/* Model */}
             <View>
-              <Text className="text-gray-700 font-medium mb-2">
+              <Text className="text-gray-700 dark:text-gray-300 font-medium mb-2">
                 Model <Text className="text-red-500">*</Text>
               </Text>
               <TextInput
-                className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
+                className="w-full h-12 px-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-900 dark:text-white"
                 value={formData.model}
                 onChangeText={(value) => handleInputChange('model', value)}
                 placeholder="Enter model name"
@@ -293,11 +293,11 @@ export default function EditWatchPage() {
 
             {/* Price */}
             <View>
-              <Text className="text-gray-700 font-medium mb-2">
+              <Text className="text-gray-700 dark:text-gray-300 font-medium mb-2">
                 Price <Text className="text-red-500">*</Text>
               </Text>
               <TextInput
-                className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
+                className="w-full h-12 px-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-900 dark:text-white"
                 value={formData.price}
                 onChangeText={(value) => handleInputChange('price', value)}
                 placeholder="0.00"
@@ -308,9 +308,9 @@ export default function EditWatchPage() {
 
             {/* Reference */}
             <View>
-              <Text className="text-gray-700 font-medium mb-2">Reference</Text>
+              <Text className="text-gray-700 dark:text-gray-300 font-medium mb-2">Reference</Text>
               <TextInput
-                className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
+                className="w-full h-12 px-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-900 dark:text-white"
                 value={formData.reference}
                 onChangeText={(value) => handleInputChange('reference', value)}
                 placeholder="Enter reference number"
@@ -320,11 +320,11 @@ export default function EditWatchPage() {
 
             {/* Website Link */}
             <View>
-              <Text className="text-gray-700 font-medium mb-2">
+              <Text className="text-gray-700 dark:text-gray-300 font-medium mb-2">
                 Website Link
               </Text>
               <TextInput
-                className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
+                className="w-full h-12 px-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-900 dark:text-white"
                 value={formData.link}
                 onChangeText={(value) => handleInputChange('link', value)}
                 placeholder="https://..."
@@ -336,14 +336,14 @@ export default function EditWatchPage() {
 
             {/* Acquired Status */}
             <View>
-              <Text className="text-gray-700 font-medium mb-2">Acquired</Text>
+              <Text className="text-gray-700 dark:text-gray-300 font-medium mb-2">Acquired</Text>
               <View className="flex-row items-center justify-between">
-                <Text className="text-gray-600">Do you own this watch?</Text>
+                <Text className="text-gray-600 dark:text-gray-400">Do you own this watch?</Text>
                 <Switch
                   value={formData.acquired}
                   onValueChange={handleAcquiredToggle}
                   trackColor={{ false: '#D1D5DB', true: '#3B82F6' }}
-                  thumbColor={formData.acquired ? '#FFFFFF' : '#FFFFFF'}
+                  thumbColor="#FFFFFF"
                 />
               </View>
             </View>
@@ -352,13 +352,13 @@ export default function EditWatchPage() {
       </KeyboardAwareScrollView>
 
       {/* Action Buttons */}
-      <View className="p-4 border-t border-gray-200 flex-row gap-4">
+      <View className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 flex-row gap-4">
         <TouchableOpacity
-          className="flex-1 bg-white border border-gray-300 py-4 rounded-xl items-center"
+          className="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 py-4 rounded-xl items-center"
           onPress={handleCancel}
           disabled={saving}
         >
-          <Text className="text-gray-700 font-semibold">Cancel</Text>
+          <Text className="text-gray-700 dark:text-gray-300 font-semibold">Cancel</Text>
         </TouchableOpacity>
 
         <TouchableOpacity

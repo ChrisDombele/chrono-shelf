@@ -126,7 +126,7 @@ const AddWatchPage = () => {
 
   return (
     <SafeAreaView
-      className="flex-1 bg-gray-50 px-4"
+      className="flex-1 bg-gray-50 dark:bg-gray-950 px-4"
       edges={['top', 'left', 'right']}
     >
       <KeyboardAwareScrollView
@@ -134,12 +134,11 @@ const AddWatchPage = () => {
         className="flex-1"
         showsVerticalScrollIndicator={false}
       >
-        {/* <ScrollView className="flex-1" showsVerticalScrollIndicator={false}> */}
         {/* Watch Image */}
         <View className="my-6">
           <TouchableOpacity
             onPress={handleAddPhoto}
-            className="w-full h-64 border-2 border-dashed border-gray-300 rounded-xl bg-white items-center justify-center"
+            className="w-full h-64 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 items-center justify-center"
           >
             {newImageFile ? (
               <Image
@@ -170,11 +169,11 @@ const AddWatchPage = () => {
         <View className="gap-2">
           {/* Brand */}
           <View>
-            <Text className="text-gray-700 font-medium mb-2">
+            <Text className="text-gray-700 dark:text-gray-300 font-medium mb-2">
               Brand <Text className="text-red-500">*</Text>
             </Text>
             <TextInput
-              className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
+              className="w-full h-12 px-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-900 dark:text-white"
               value={watchData.brand}
               onChangeText={(value) => handleInputChange('brand', value)}
               placeholder="Enter brand name"
@@ -184,11 +183,11 @@ const AddWatchPage = () => {
 
           {/* Model */}
           <View>
-            <Text className="text-gray-700 font-medium mb-2">
+            <Text className="text-gray-700 dark:text-gray-300 font-medium mb-2">
               Model <Text className="text-red-500">*</Text>
             </Text>
             <TextInput
-              className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
+              className="w-full h-12 px-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-900 dark:text-white"
               value={watchData.model}
               onChangeText={(value) => handleInputChange('model', value)}
               placeholder="Enter model name"
@@ -198,11 +197,11 @@ const AddWatchPage = () => {
 
           {/* Price */}
           <View>
-            <Text className="text-gray-700 font-medium mb-2">
+            <Text className="text-gray-700 dark:text-gray-300 font-medium mb-2">
               Price <Text className="text-red-500">*</Text>
             </Text>
             <TextInput
-              className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
+              className="w-full h-12 px-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-900 dark:text-white"
               value={watchData.price}
               onChangeText={(value) => handleInputChange('price', value)}
               placeholder="0.00"
@@ -213,9 +212,9 @@ const AddWatchPage = () => {
 
           {/* Reference */}
           <View>
-            <Text className="text-gray-700 font-medium mb-2">Reference</Text>
+            <Text className="text-gray-700 dark:text-gray-300 font-medium mb-2">Reference</Text>
             <TextInput
-              className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
+              className="w-full h-12 px-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-900 dark:text-white"
               value={watchData.reference}
               onChangeText={(value) => handleInputChange('reference', value)}
               placeholder="Enter reference number"
@@ -225,9 +224,9 @@ const AddWatchPage = () => {
 
           {/* Website Link */}
           <View>
-            <Text className="text-gray-700 font-medium mb-2">Website Link</Text>
+            <Text className="text-gray-700 dark:text-gray-300 font-medium mb-2">Website Link</Text>
             <TextInput
-              className="w-full h-12 px-4 bg-gray-100 rounded-xl text-gray-900"
+              className="w-full h-12 px-4 bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-900 dark:text-white"
               value={watchData.link}
               onChangeText={(value) => handleInputChange('link', value)}
               placeholder="https://..."
@@ -239,16 +238,16 @@ const AddWatchPage = () => {
 
           {/* Acquired Status */}
           <View>
-            <Text className="text-gray-700 font-medium mb-2">Acquired</Text>
+            <Text className="text-gray-700 dark:text-gray-300 font-medium mb-2">Acquired</Text>
             <View className="flex-row items-center justify-between">
-              <Text className="text-gray-600">Do you own this watch?</Text>
+              <Text className="text-gray-600 dark:text-gray-400">Do you own this watch?</Text>
               <Switch
                 value={watchData.acquired}
                 onValueChange={(value) =>
                   setWatchData((prev) => ({ ...prev, acquired: value }))
                 }
                 trackColor={{ false: '#D1D5DB', true: '#3B82F6' }}
-                thumbColor={watchData.acquired ? '#FFFFFF' : '#FFFFFF'}
+                thumbColor="#FFFFFF"
               />
             </View>
           </View>
@@ -258,9 +257,9 @@ const AddWatchPage = () => {
         <View className="flex-row gap-4 mt-8 mb-6">
           <TouchableOpacity
             onPress={() => router.back()}
-            className="flex-1 py-4 rounded-xl border border-gray-300 items-center"
+            className="flex-1 py-4 rounded-xl border border-gray-300 dark:border-gray-600 items-center"
           >
-            <Text className="text-base font-medium text-gray-700">Cancel</Text>
+            <Text className="text-base font-medium text-gray-700 dark:text-gray-300">Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleAddWatch}
