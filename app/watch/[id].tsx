@@ -145,7 +145,7 @@ export default function WatchDetailPage() {
         showsVerticalScrollIndicator={false}
       >
         {/* Hero Section — intentionally always dark */}
-        <View className="relative h-96 bg-gray-900 overflow-hidden">
+        <View className="relative h-96 bg-gray-50 overflow-hidden">
           {/* Back Button */}
           <TouchableOpacity
             className="absolute top-4 left-4 z-10 w-10 h-10 rounded-md items-center justify-center bg-gray-500/60"
@@ -170,7 +170,7 @@ export default function WatchDetailPage() {
           </View>
 
           {/* Watch Info Overlay */}
-          <View className="absolute bottom-0 p-6">
+          <View className="absolute bottom-0 p-6 bg-gray-900/60 rounded-tr-2xl">
             {/* Wishlist/Acquired Toggle */}
             <TouchableOpacity
               className="flex-row items-center mb-3"

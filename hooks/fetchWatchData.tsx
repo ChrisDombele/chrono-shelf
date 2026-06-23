@@ -31,21 +31,21 @@ export interface UseFetchWatchDataReturn {
   error: string | null;
   refetch: () => Promise<void>;
   addWatch: (
-    watch: Omit<Watch, 'id' | 'user_id'>
+    watch: Omit<Watch, 'id' | 'user_id'>,
   ) => Promise<{ success: boolean; error?: string; data?: WatchWithBrand }>;
   updateWatch: (
     id: string,
-    updates: Partial<Omit<Watch, 'id' | 'user_id'>>
+    updates: Partial<Omit<Watch, 'id' | 'user_id'>>,
   ) => Promise<{ success: boolean; error?: string }>;
   deleteWatch: (id: string) => Promise<{ success: boolean; error?: string }>;
   toggleAcquired: (id: string) => Promise<{ success: boolean; error?: string }>;
   fetchBrands: () => Promise<void>;
   addBrand: (
-    brandName: string
+    brandName: string,
   ) => Promise<{ success: boolean; error?: string; data?: Brand }>;
   updateBrand: (
     id: string,
-    brandName: string
+    brandName: string,
   ) => Promise<{ success: boolean; error?: string; data?: Brand }>;
 }
 
@@ -97,10 +97,10 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
             id,
             brand_name
           )
-        `
+        `,
         )
         .eq('user_id', user.id)
-        .order('acquired', { ascending: true }) // Show non-acquired first (wishlist items)
+        .order('acquired', { ascending: false }) // Show non-acquired first (wishlist items)
         .order('price', { ascending: false }); // Then by price descending
 
       if (supabaseError) {
@@ -139,7 +139,7 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
             id,
             brand_name
           )
-        `
+        `,
           )
           .single();
 
@@ -158,7 +158,7 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
         };
       }
     },
-    [user]
+    [user],
   );
 
   // Update an existing watch
@@ -181,7 +181,7 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
             id,
             brand_name
           )
-        `
+        `,
           )
           .single();
 
@@ -191,7 +191,7 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
 
         // Update the local state
         setWatches((prev) =>
-          prev.map((watch) => (watch.id === id ? data : watch))
+          prev.map((watch) => (watch.id === id ? data : watch)),
         );
         return { success: true };
       } catch (err) {
@@ -202,7 +202,7 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
         };
       }
     },
-    [user]
+    [user],
   );
 
   // Delete a watch
@@ -234,7 +234,7 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
         };
       }
     },
-    [user]
+    [user],
   );
 
   // Toggle acquired status (useful for wishlist vs collection management)
@@ -262,7 +262,7 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
             id,
             brand_name
           )
-        `
+        `,
           )
           .single();
 
@@ -284,7 +284,7 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
         };
       }
     },
-    [user, watches]
+    [user, watches],
   );
 
   // Refetch all data
@@ -302,7 +302,7 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
       try {
         // Check if brand already exists
         const existingBrand = brands.find(
-          (b) => b.brand_name.toLowerCase() === brandName.toLowerCase()
+          (b) => b.brand_name.toLowerCase() === brandName.toLowerCase(),
         );
 
         if (existingBrand) {
@@ -322,8 +322,8 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
         // Update local state
         setBrands((prev) =>
           [...prev, data].sort((a, b) =>
-            a.brand_name.localeCompare(b.brand_name)
-          )
+            a.brand_name.localeCompare(b.brand_name),
+          ),
         );
         return { success: true, data };
       } catch (err) {
@@ -334,7 +334,7 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
         };
       }
     },
-    [user, brands]
+    [user, brands],
   );
 
   // Update brand name
@@ -349,7 +349,7 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
         const existingBrand = brands.find(
           (b) =>
             b.id !== id &&
-            b.brand_name.toLowerCase() === brandName.toLowerCase()
+            b.brand_name.toLowerCase() === brandName.toLowerCase(),
         );
 
         if (existingBrand) {
@@ -371,7 +371,7 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
         setBrands((prev) =>
           prev
             .map((b) => (b.id === id ? data : b))
-            .sort((a, b) => a.brand_name.localeCompare(b.brand_name))
+            .sort((a, b) => a.brand_name.localeCompare(b.brand_name)),
         );
         return { success: true, data };
       } catch (err) {
@@ -382,7 +382,7 @@ export const useFetchWatchData = (): UseFetchWatchDataReturn => {
         };
       }
     },
-    [user, brands]
+    [user, brands],
   );
 
   // Initial fetch and auth state change handling
@@ -427,7 +427,7 @@ export const useWatchFilters = (watches: WatchWithBrand[]) => {
     (brandId: string) => {
       return watches.filter((watch) => watch.brand_id === brandId);
     },
-    [watches]
+    [watches],
   );
 
   const getTotalValue = useCallback(
@@ -438,19 +438,19 @@ export const useWatchFilters = (watches: WatchWithBrand[]) => {
 
       return filteredWatches.reduce(
         (total, watch) => total + (watch.price || 0),
-        0
+        0,
       );
     },
-    [watches]
+    [watches],
   );
 
   const getWatchesByPriceRange = useCallback(
     (minPrice: number, maxPrice: number) => {
       return watches.filter(
-        (watch) => watch.price >= minPrice && watch.price <= maxPrice
+        (watch) => watch.price >= minPrice && watch.price <= maxPrice,
       );
     },
-    [watches]
+    [watches],
   );
 
   return {
@@ -467,14 +467,14 @@ export const useWatchFilters = (watches: WatchWithBrand[]) => {
 
 // Input validation utility functions
 export const validateRequiredFields = (
-  fields: Record<string, any>
+  fields: Record<string, any>,
 ): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
 
   Object.entries(fields).forEach(([fieldName, value]) => {
     if (value === null || value === undefined || value === '') {
       errors.push(
-        `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} is required`
+        `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} is required`,
       );
     }
   });
@@ -488,7 +488,7 @@ export const validateRequiredFields = (
 // Function to check if input fields are empty and display warnings
 export const checkEmptyFieldsAndWarn = (
   fields: Record<string, any>,
-  onWarning?: (warnings: string[]) => void
+  onWarning?: (warnings: string[]) => void,
 ): boolean => {
   const { isValid, errors } = validateRequiredFields(fields);
 
@@ -524,15 +524,15 @@ export const useFormValidation = (requiredFields: string[]) => {
       }
       return true;
     },
-    [requiredFields]
+    [requiredFields],
   );
 
   const validateAllFields = useCallback(
     (formData: Record<string, any>) => {
       const validation = validateRequiredFields(
         Object.fromEntries(
-          requiredFields.map((field) => [field, formData[field]])
-        )
+          requiredFields.map((field) => [field, formData[field]]),
+        ),
       );
 
       if (!validation.isValid) {
@@ -548,7 +548,7 @@ export const useFormValidation = (requiredFields: string[]) => {
 
       return validation.isValid;
     },
-    [requiredFields]
+    [requiredFields],
   );
 
   const markFieldAsTouched = useCallback((fieldName: string) => {
