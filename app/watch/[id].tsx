@@ -199,7 +199,7 @@ export default function WatchDetailPage() {
         </View>
 
         {/* Watch Name */}
-        <View className="mx-4 mt-8 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+        <View className="mx-4 mt-8 ">
           <Text className="text-gray-900 dark:text-gray-400 text-center text-3xl font-bold mb-2">
             {watch.brand?.brand_name || 'Unknown Brand'}
           </Text>
@@ -209,7 +209,7 @@ export default function WatchDetailPage() {
         </View>
 
         {/* Price Card */}
-        <View className="mx-4 mt-8 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+        <View className="mx-4 mt-8 ">
           {/* <Text className="text-gray-500 dark:text-gray-400 text-center text-base mb-2">
             Price
           </Text> */}
@@ -232,10 +232,10 @@ export default function WatchDetailPage() {
         </View>
 
         {/* Details Card */}
-        <View className="mx-4 mt-4 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-          <Text className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+        <View className="mx-4 mt-4 pt-6 pb-6">
+          {/* <Text className="text-xl font-bold text-gray-900 dark:text-white mb-6">
             Details
-          </Text>
+          </Text> */}
 
           <View className="flex-row">
             {/* Left Column */}
