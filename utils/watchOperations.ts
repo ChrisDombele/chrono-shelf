@@ -1,5 +1,5 @@
 import { Alert } from 'react-native';
-import { Watch, Brand, WatchWithBrand } from '../../hooks/fetchWatchData';
+import { Watch, Brand, WatchWithBrand } from '../hooks/fetchWatchData';
 
 interface WatchFormData {
   brand: string;

@@ -15,7 +15,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { numberToFormat } from '../utils/conversions';
+import { numberToFormat } from '../../utils/conversions';
 
 export default function WatchDetailPage() {
   const { id } = useLocalSearchParams();

@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { saveWatch } from '../utils/watchOperations';
+import { saveWatch } from '../../utils/watchOperations';
 
 export default function EditWatchPage() {
   const router = useRouter();

@@ -1,4 +1,4 @@
-import { numberToFormat } from '@/app/utils/conversions';
+import { numberToFormat } from '@/utils/conversions';
 import { CheckCircle, Circle } from 'lucide-react-native';
 import { Text, TouchableOpacity, View } from 'react-native';
 
